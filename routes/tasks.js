@@ -5,6 +5,13 @@ let tasks = [];
 let nextId = 0;
 
 router.get("/", (req, res) => {
+  const { done } = req.query;
+
+  if (done !== undefined) {
+    const filtered = tasks.filter((t) => t.done === (done === "true"));
+    return res.json(filtered);
+  }
+
   res.json(tasks);
 });
 
@@ -35,6 +42,15 @@ router.delete("/:id", (req, res) => {
 
   tasks.splice(index, 1);
   res.status(204).send();
+});
+
+router.patch("/:id", (req, res) => {
+  const task = tasks.find((t) => t.id === parseInt(req.params.id));
+
+  if (!task) return res.status(404).json({ error: "Task not found" });
+
+  task.done = true;
+  res.json(task);
 });
 
 module.exports = router;
