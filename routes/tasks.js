@@ -1,11 +1,10 @@
 const express = require("express");
 const router = express.Router();
-
-let tasks = [];
-let nextId = 0;
+const store = require("../data/store");
 
 router.get("/", (req, res) => {
   const { done } = req.query;
+  const tasks = store.getAll();
 
   if (done !== undefined) {
     const filtered = tasks.filter((t) => t.done === (done === "true"));
@@ -22,13 +21,11 @@ router.post("/", (req, res) => {
     return res.status(400).json({ error: "Title is required" });
   }
 
-  const newTask = { id: nextId++, title, done: false };
-  tasks.push(newTask);
-  res.status(201).json(newTask);
+  res.status(201).json(store.create(title));
 });
 
 router.get("/:id", (req, res) => {
-  const task = tasks.find((t) => t.id === parseInt(req.params.id));
+  const task = store.getById(parseInt(req.params.id));
 
   if (!task) return res.status(404).json({ error: "Task not found" });
 
@@ -36,20 +33,18 @@ router.get("/:id", (req, res) => {
 });
 
 router.delete("/:id", (req, res) => {
-  const index = tasks.findIndex((t) => t.id === parseInt(req.params.id));
+  const removed = store.remove(parseInt(req.params.id));
 
-  if (index === -1) return res.status(404).json({ error: "Task not found" });
+  if (!removed) return res.status(404).json({ error: "Task not found" });
 
-  tasks.splice(index, 1);
   res.status(204).send();
 });
 
 router.patch("/:id", (req, res) => {
-  const task = tasks.find((t) => t.id === parseInt(req.params.id));
+  const task = store.update(parseInt(req.params.id), req.body);
 
   if (!task) return res.status(404).json({ error: "Task not found" });
 
-  task.done = true;
   res.json(task);
 });
 
