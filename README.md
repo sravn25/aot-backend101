@@ -47,3 +47,20 @@ curl -X PATCH http://localhost:3000/tasks/1 \
 ```bash
 curl "http://localhost:3000/tasks?done=true"
 ```
+
+# Persistent storage
+## Create a task
+```bash
+curl -X POST http://localhost:3000/tasks \
+    -H "Content-Type: application/json" \
+    -d '{"title": "Learn MongoDB"}'
+```
+
+## Get all tasks
+```bash
+curl http://localhost:3000/tasks
+```
+## Use that _id to fetch a specific task
+```bash
+curl http://localhost:3000/tasks/`{id}`
+```

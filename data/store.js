@@ -1,32 +1,23 @@
-let tasks = [];
-let nextId = 1;
+const Task = require("./Task");
 
 module.exports = {
   getAll() {
-    return tasks;
+    return Task.find();
   },
 
   getById(id) {
-    return tasks.find((t) => t.id === id);
+    return Task.findById(id);
   },
 
   create(title) {
-    const task = { id: nextId++, title, done: false };
-    tasks.push(task);
-    return task;
+    return Task.create({ title });
   },
 
   update(id, changes) {
-    const task = tasks.find((t) => t.id === id);
-    if (!task) return null;
-    Object.assign(task, changes);
-    return task;
+    return Task.findByIdAndUpdate(id, changes, { new: true });
   },
 
   remove(id) {
-    const index = tasks.findIndex((t) => t.id === id);
-    if (index === -1) return false;
-    tasks.splice(index, 1);
-    return true;
+    return Task.findByIdAndDelete(id);
   },
 };
