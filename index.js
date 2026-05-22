@@ -1,6 +1,7 @@
 require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
+const cors = require("cors");
 
 const app = express();
 const PORT = 3000;
@@ -10,6 +11,8 @@ mongoose
   .then(() => console.log("Connected to MongoDB"))
   .catch((err) => console.error("Connection failed:", err));
 
+app.use(cors());
+// app.use(cors({ origin: https://domain_name.com'}));
 app.use(express.json());
 const taskRouter = require("./routes/tasks");
 app.use("/tasks", taskRouter);
