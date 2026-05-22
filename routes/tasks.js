@@ -2,9 +2,9 @@ const express = require("express");
 const router = express.Router();
 const store = require("../data/store");
 
-router.get("/", (req, res) => {
+router.get("/", async (req, res) => {
+  const tasks = await store.getAll();
   const { done } = req.query;
-  const tasks = store.getAll();
 
   if (done !== undefined) {
     const filtered = tasks.filter((t) => t.done === (done === "true"));
@@ -14,34 +14,34 @@ router.get("/", (req, res) => {
   res.json(tasks);
 });
 
-router.post("/", (req, res) => {
+router.post("/", async (req, res) => {
   const { title } = req.body;
 
   if (!title) {
     return res.status(400).json({ error: "Title is required" });
   }
-
-  res.status(201).json(store.create(title));
+  const task = await store.create(title);
+  res.status(201).json(task);
 });
 
-router.get("/:id", (req, res) => {
-  const task = store.getById(parseInt(req.params.id));
+router.get("/:id", async (req, res) => {
+  const task = await store.getById(req.params.id);
 
   if (!task) return res.status(404).json({ error: "Task not found" });
 
   res.json(task);
 });
 
-router.delete("/:id", (req, res) => {
-  const removed = store.remove(parseInt(req.params.id));
+router.delete("/:id", async (req, res) => {
+  const removed = await store.remove(req.params.id);
 
   if (!removed) return res.status(404).json({ error: "Task not found" });
 
   res.status(204).send();
 });
 
-router.patch("/:id", (req, res) => {
-  const task = store.update(parseInt(req.params.id), req.body);
+router.patch("/:id", async (req, res) => {
+  const task = await store.update(req.params.id, req.body);
 
   if (!task) return res.status(404).json({ error: "Task not found" });
 
